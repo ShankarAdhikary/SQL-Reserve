@@ -1,8 +1,8 @@
-# 🏦 SQL Reserve — Full-Stack Banking System
+# SQL Reserve — Full-Stack Banking System
 
 Hey there! This is **SQL Reserve**, a project I built for my DBMS course. While it started as an academic assignment, I wanted to push it further and build something that looks and feels like a real-world production app—handling everything from ACID-compliant fund transfers to real-time security auditing.
 
-🔗 **Check it out live:** [https://sql-reserve.onrender.com](https://sql-reserve.onrender.com)
+**Check it out live:** [https://sql-reserve.onrender.com](https://sql-reserve.onrender.com)
 
 ---
 
@@ -25,7 +25,7 @@ The goal wasn't just to make "another CRUD app." I wanted to see how much logic 
 
 ---
 
-## 🛠️ The Tech Stack
+## The Tech Stack
 
 I went with a modern, type-safe stack to keep things from breaking:
 
@@ -36,7 +36,7 @@ I went with a modern, type-safe stack to keep things from breaking:
 
 ---
 
-## 🗃️ Database Deep Dive
+## Database Deep Dive
 This is where the "DBMS Course" part really shines. I didn't just make tables; I built a system:
 
 | Feature | What it actually does |
