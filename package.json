@@ -1,0 +1,16 @@
+{
+  "name": "sql-reserve-banking",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SQL Reserve - Full-Stack Banking System",
+  "scripts": {
+    "install:client": "cd client && npm install",
+    "install:server": "cd dbmsproject/server && npm install",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd dbmsproject/server && npm run build",
+    "build": "npm run install:client && npm run build:client && npm run install:server && npm run build:server && npm run copy:frontend",
+    "copy:frontend": "node -e \"const fs=require('fs');const path=require('path');function copyDir(s,d){fs.mkdirSync(d,{recursive:true});for(const f of fs.readdirSync(s)){const src=path.join(s,f),dst=path.join(d,f);fs.statSync(src).isDirectory()?copyDir(src,dst):fs.copyFileSync(src,dst)}}copyDir('client/dist','dbmsproject/server/dist/public')\"",
+    "start": "cd dbmsproject/server && node dist/src/index.js",
+    "dev": "echo 'Run client and server separately for development'"
+  }
+}

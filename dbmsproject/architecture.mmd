@@ -1,0 +1,64 @@
+graph TB
+    subgraph Client_Side [Frontend - React]
+        UI[User Interface]
+        Auth_FE[Auth Manager]
+        API_Client[Axios Client]
+    end
+
+    subgraph Security_Layer [Security and Encryption]
+        SSL[TLS/SSL Encryption]
+        Payload_Enc[Payload Encryption - Optional]
+    end
+
+    subgraph Server_Side [Backend - Node.js Express]
+        API_GW[API Gateway / Routes]
+        Auth_Service[Auth Service]
+        Trans_Service[Transaction Service]
+        Acc_Service[Account Service]
+        
+        subgraph Logic_Core
+            Validation[Input Validation]
+            Encryption_Engine[Encryption Engine AES-256]
+            Hashing_Engine[Hashing Engine Bcrypt]
+        end
+    end
+
+    subgraph Database_Layer [DBMS - PostgreSQL]
+        Users_Table[(Users Table)]
+        Accounts_Table[(Accounts Table)]
+        Transactions_Table[(Transactions Table)]
+        Logs_Table[(Audit Logs)]
+    end
+
+    %% Data Flow
+    UI --> Auth_FE
+    Auth_FE --> API_Client
+    API_Client -- JSON Data --> SSL
+    SSL --> API_GW
+
+    %% Auth Flow
+    API_GW -- /login /register --> Auth_Service
+    Auth_Service --> Validation
+    Validation --> Hashing_Engine
+    Hashing_Engine -- Hashed Password --> Users_Table
+
+    %% Transaction Flow
+    API_GW -- /transfer --> Trans_Service
+    Trans_Service --> Validation
+    Validation --> Encryption_Engine
+    Encryption_Engine -- Encrypted Sensitive Data --> Accounts_Table
+    
+    %% DBMS Transaction ACID
+    Trans_Service -- BEGIN TRANSACTION --> Transactions_Table
+    Trans_Service -- UPDATE Balance --> Accounts_Table
+    Trans_Service -- INSERT Log --> Logs_Table
+    Trans_Service -- COMMIT/ROLLBACK --> Database_Layer
+
+    %% Styling
+    classDef secure fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef db fill:#dda,stroke:#333,stroke-width:2px;
+    classDef logic fill:#add,stroke:#333,stroke-width:2px;
+
+    class Security_Layer,Encryption_Engine,Hashing_Engine secure;
+    class Database_Layer,Users_Table,Accounts_Table,Transactions_Table,Logs_Table db;
+    class Auth_Service,Trans_Service,Acc_Service,Validation logic;

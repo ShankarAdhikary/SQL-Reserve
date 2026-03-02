@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Reserve Minimal Demo</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f4f4f9;
+        }
+
+        section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        pre {
+            background: #222;
+            color: #7f7;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+
+        .encryption-box {
+            background: #eefbff;
+            border-left: 5px solid #007bff;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>SQL Reserve - Backend Logic Demo</h1>
+    <p>This is a VERY simple frontend to show that the backend encryption and logic work.</p>
+
+    <!-- 1. SIGNUP -->
+    <section id="signup-section">
+        <h2>1. Create Account (Sign Up)</h2>
+        <form id="signup-form">
+            <input type="text" name="fullName" placeholder="Full Name" required>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="phone" placeholder="Phone Number" required>
+            <input type="text" name="nationalId" placeholder="National ID" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+        <div id="signup-msg"></div>
+    </section>
+
+    <!-- 2. LOGIN -->
+    <section id="login-section">
+        <h2>2. Login</h2>
+        <form id="login-form">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <div id="login-msg"></div>
+    </section>
+
+    <!-- 3. PROFILE & ENCRYPTION -->
+    <section id="profile-section" style="display:none;">
+        <h2>3. User Profile & Encryption Check</h2>
+        <button onclick="fetchProfile()">Refresh Profile Data</button>
+        <div id="profile-data"></div>
+    </section>
+
+    <!-- 4. BANKING OPERATIONS -->
+    <section id="banking-section" style="display:none;">
+        <h2>4. Banking Operations</h2>
+
+        <div id="accounts-list"></div>
+        <button onclick="createBankAccount()">Open New Savings Account ($1000 Bonus)</button>
+
+        <hr>
+        <h3>Deposit / Withdraw</h3>
+        <select id="acc-select"></select>
+        <input type="number" id="amount" placeholder="Amount ($)">
+        <button onclick="doAction('deposit')">Deposit</button>
+        <button onclick="doAction('withdraw')" style="background: #dc3545;">Withdraw</button>
+        <div id="bank-msg"></div>
+    </section>
+
+    <script>
+        let token = '';
+        const API_URL = '/api';
+
+        // Helper for messages
+        function showMsg(id, text, isError = false) {
+            const el = document.getElementById(id);
+            el.innerText = text;
+            el.className = isError ? 'error' : 'success';
+        }
+
+        // SIGNUP
+        document.getElementById('signup-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            try {
+                const res = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const json = await res.json();
+                if (res.ok) showMsg('signup-msg', 'Registration successful! Now login.');
+                else showMsg('signup-msg', json.message, true);
+            } catch (e) { showMsg('signup-msg', 'Server error', true); }
+        };
+
+        // LOGIN
+        document.getElementById('login-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const json = await res.json();
+                if (res.ok) {
+                    token = json.token;
+                    document.getElementById('profile-section').style.display = 'block';
+                    document.getElementById('banking-section').style.display = 'block';
+                    showMsg('login-msg', 'Logged in successfully!');
+                    fetchProfile();
+                    fetchAccounts();
+                } else showMsg('login-msg', json.message, true);
+            } catch (e) { showMsg('login-msg', 'Server error', true); }
+        };
+
+        // PROFILE & ENCRYPTION DEMO
+        async function fetchProfile() {
+            const res = await fetch(`${API_URL}/auth/profile`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const json = await res.json();
+            document.getElementById('profile-data').innerHTML = `
+                <p><strong>Name:</strong> ${json.fullName}</p>
+                <div class="encryption-box">
+                    <p>🔐 <strong>Data in Database (Encrypted):</strong><br><pre>${json.phoneEncryptedInDB}</pre></p>
+                    <p>🔓 <strong>Data Decrypted by Server:</strong> ${json.phoneDecrypted}</p>
+                </div>
+            `;
+        }
+
+        // BANKING
+        async function fetchAccounts() {
+            const res = await fetch(`${API_URL}/bank/accounts`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const accounts = await res.json();
+            const list = document.getElementById('accounts-list');
+            const select = document.getElementById('acc-select');
+            list.innerHTML = '<h3>Your Accounts:</h3>';
+            select.innerHTML = '';
+            accounts.forEach(acc => {
+                list.innerHTML += `<p>💰 <strong>${acc.account_type}:</strong> ${acc.account_number} | Balance: <strong>$${acc.balance}</strong></p>`;
+                select.innerHTML += `<option value="${acc.account_id}">${acc.account_number} ($${acc.balance})</option>`;
+            });
+        }
+
+        async function createBankAccount() {
+            await fetch(`${API_URL}/bank/accounts`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ accountType: 'SAVINGS', initialBalance: 1000 })
+            });
+            fetchAccounts();
+        }
+
+        async function doAction(type) {
+            const accountId = document.getElementById('acc-select').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const res = await fetch(`${API_URL}/bank/${type}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ accountId, amount })
+            });
+            const json = await res.json();
+            if (res.ok) {
+                showMsg('bank-msg', json.message);
+                fetchAccounts();
+            } else showMsg('bank-msg', json.message, true);
+        }
+    </script>
+</body>
+
+</html>

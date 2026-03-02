@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e5a7e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#164560;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cyl" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a8c8dc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7ba8c4;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cylDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6a9ab8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5088a4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
+  <!-- Database cylinder body -->
+  <rect x="128" y="160" width="180" height="200" rx="4" fill="url(#cyl)" opacity="0.9"/>
+  <!-- Cylinder horizontal lines (disk layers) -->
+  <line x1="128" y1="220" x2="308" y2="220" stroke="url(#cylDark)" stroke-width="4" opacity="0.6"/>
+  <line x1="128" y1="280" x2="308" y2="280" stroke="url(#cylDark)" stroke-width="4" opacity="0.6"/>
+  <!-- Top ellipse -->
+  <ellipse cx="218" cy="160" rx="90" ry="32" fill="url(#cyl)" stroke="#5a8faa" stroke-width="3"/>
+  <!-- Inner top ellipse -->
+  <ellipse cx="218" cy="160" rx="70" ry="22" fill="url(#cylDark)" opacity="0.4"/>
+  <!-- Bottom ellipse -->
+  <ellipse cx="218" cy="360" rx="90" ry="32" fill="url(#cylDark)" opacity="0.7"/>
+  <!-- S curve overlay -->
+  <path d="M200 170 C160 190 280 230 240 260 C200 290 280 330 240 350" 
+        stroke="white" stroke-width="12" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <!-- Lock icon (small) -->
+  <rect x="280" y="290" width="52" height="42" rx="6" fill="#7ba8c4" stroke="#5a8faa" stroke-width="2"/>
+  <path d="M295 290 L295 274 C295 260 327 260 327 274 L327 290" 
+        stroke="#5a8faa" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="306" cy="310" r="6" fill="#1e5a7e"/>
+</svg>
