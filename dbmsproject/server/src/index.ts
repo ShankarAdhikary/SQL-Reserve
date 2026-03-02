@@ -46,7 +46,7 @@ app.get('/health', (req, res) => {
 });
 
 // SPA catch-all: serve index.html for any non-API route (client-side routing)
-app.get('*', (req, res) => {
+app.get('{*path}', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 
