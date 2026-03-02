@@ -4,8 +4,8 @@
   "private": true,
   "description": "SQL Reserve - Full-Stack Banking System",
   "scripts": {
-    "install:client": "cd client && npm install",
-    "install:server": "cd dbmsproject/server && npm install",
+    "install:client": "cd client && npm install --include=dev",
+    "install:server": "cd dbmsproject/server && npm install --include=dev",
     "build:client": "cd client && npm run build",
     "build:server": "cd dbmsproject/server && npm run build",
     "build": "npm run install:client && npm run build:client && npm run install:server && npm run build:server && npm run copy:frontend",
